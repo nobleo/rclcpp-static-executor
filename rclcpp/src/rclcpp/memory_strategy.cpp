@@ -22,7 +22,6 @@ MemoryStrategy::get_subscription_by_handle(
   std::shared_ptr<const rcl_subscription_t> subscriber_handle,
   const WeakNodeList & weak_nodes)
 {
-  std::cout << "\033[0;32m [RCLCPP] [Memory strategy]: get_subscription_by_handle called \033[0m " << std::endl;
   for (auto & weak_node : weak_nodes) {
     auto node = weak_node.lock();
     if (!node) {
