@@ -119,8 +119,9 @@ The StaticExecutor works as follows:
 
 **Init:**
 
-1. The executor performs collect_entities (gets handles from RCL) ***ONCE***
-2. The executor creates a struct with all executables with the same index as the handles in the wait_set by walking the tree of weak_ptrs ***ONCE***
+1. The executor creates a struct with all executables with the same index as the handles in the wait_set by walking the tree of weak_ptrs ***ONCE***
+2. The executor performs collect_entities (gets handles from RCL) ***ONCE***
+
 
 **Loop:**
 
@@ -128,3 +129,6 @@ The StaticExecutor works as follows:
 4. The executor communicates with RMW -> DDS layer to see what callbacks are ready to execute (put NULL if not ready in the wait_set)
 5. The executor walks over the wait_set, if it finds a NULL nothing happens, if a handle is found the executable is executed at the same index in the executables struct
 6. Go to 3
+
+This process is visualized in the following flowchart:
+![Alt text](/images/StaticExecutor_flowchart.png?raw=true "STE flowchart")
