@@ -91,4 +91,40 @@ The static executor makes the following assumptions:
 ## Current functionality
 The static executor has been tested with subscribers and timers. The other features such as clients, services and waitables are still being implemented and tested and may not function as expected. 
 
-## Inner workings
+## Inner workings of the SingleThreadedExecutor
+During initialization handles to nodes, callbackgroups, timers, subscriptions etc. are created in RCL and RMW.
+The SingleThreadedExecutor works as follows:
+
+**"Init:"**
+
+1. The executor finds nothing to execute
+2. The executor performs collect_entities (gets handles from RCL)
+3. The executor creates a wait_set using these handles
+4. The executor communicates with RMW -> DDS layer to see what callbacks are ready to execute (put NULL if not ready in the wait_set)
+5. The NULL handles are removed from the wait_set -> a wait_set containing handles corresponding to executables that need to be executed is left
+
+**Loop:**
+
+6. The executor looks for the next thing to execute in the following order: timers, subscriptions, services, clients, waitables
+7. The executor walks through a tree of weak_ptrs to nodes which contain callbackgroups that contain timers, subscriptions etc.
+8. The executor checks if the handle inside the node inside the callbackgroup inside the timer corresponds to a handle in the wait_set
+9. If a handle is found that is in the wait_set the corresponding callback is executed and the callbackgroup is updated. 
+10. As long as there are still things to execute repeat 6 till 9, if nothing is left to execute go to 1
+
+This process is visualized in the following flowchart:
+![Alt text](/images/STE_flowchart.png?raw=true "STE flowchart")
+
+## Changes in the StaticExecutor
+The StaticExecutor works as follows:
+
+**Init:**
+
+1. The executor performs collect_entities (gets handles from RCL) ***ONCE***
+2. The executor creates a struct with all executables with the same index as the handles in the wait_set by walking the tree of weak_ptrs ***ONCE***
+
+**Loop:**
+
+3. The executor adds RCL handles to the wait_set
+4. The executor communicates with RMW -> DDS layer to see what callbacks are ready to execute (put NULL if not ready in the wait_set)
+5. The executor walks over the wait_set, if it finds a NULL nothing happens, if a handle is found the executable is executed at the same index in the executables struct
+6. Go to 3
