@@ -1,0 +1,61 @@
+version: '2.2'
+services:
+  SingleThreadedExecutor_ros:
+    image: ros2_performance:ste_executor
+    networks:
+      - network1
+    privileged: true
+    command: ./ros2_ws/install/ros2_performance/lib/ros2_performance/ros
+    mem_limit: 300m
+    mem_reservation: 300m
+
+  StaticExecutor_ros:
+    image: ros2_performance:static_executor
+    networks:
+      - network2
+    privileged: true
+    command: ./ros2_ws/install/ros2_performance/lib/ros2_performance/ros
+    mem_limit: 300m
+    mem_reservation: 300m
+    depends_on:
+      - SingleThreadedExecutor_ros
+
+  SingleThreadedExecutor_rosonenode:
+    image: ros2_performance:ste_executor
+    networks:
+      - network3
+    privileged: true
+    command: ./ros2_ws/install/ros2_performance/lib/ros2_performance/rosonenode
+    mem_limit: 300m
+    mem_reservation: 300m
+    depends_on:
+      - StaticExecutor_ros
+
+  StaticExecutor_rosonenode:
+    image: ros2_performance:static_executor
+    networks:
+      - network4
+    privileged: true
+    command: ./ros2_ws/install/ros2_performance/lib/ros2_performance/rosonenode
+    mem_limit: 300m
+    mem_reservation: 300m
+    depends_on:
+      - SingleThreadedExecutor_rosonenode
+
+  FastRTPS:
+    image: ros2_performance:ste_executor
+    networks:
+      - network5
+    privileged: true
+    command: ./ros2_ws/install/ros2_performance/lib/ros2_performance/rtps
+    mem_limit: 300m
+    mem_reservation: 300m
+    depends_on:
+      - StaticExecutor_rosonenode
+
+networks:
+  network1:
+  network2:
+  network3:
+  network4:
+  network5:
