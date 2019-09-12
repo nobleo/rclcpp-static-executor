@@ -27,7 +27,34 @@ For all binaries:
 *These are initial results, we are still checking to make sure the executor is working as intended and the generated traffic is the same.*
 
 ## How to recreate test results
-TODO: dockerfiles + instructions (coming soon)
+It is possible to git clone this repository, build the workspace using colcon build and inspect the CPU usage with top or a similar program for each binary individually. It is however much easier to give each binary its own container (make sure to separate their networks or give them a unique ROS_DOMAIN_ID) and measure the usage of each container.
+If you don't have docker and docker compose installed first follow online tutorials on how to install these: https://docs.docker.com/install/ https://docs.docker.com/compose/install/ .
+
+Assuming you replaced the existing rclcpp package in your ROS2 environment with this version perform the following steps:
+
+1. Go to the repository with the dockerfiles
+```
+cd ~/ros2_ws/src/ros2/rclcpp/Dockerfiles
+```
+2. Build the images using the following names (building ROS2 from source will take along time! ~1 hour):
+```
+cd dashing_source
+docker build -t ros:dashing_source .
+cd ../ros2_performance_ste_executor
+docker build -t ros2_performance:ste_executor .
+cd ../ros2_performance_static_executor
+docker build -t ros2_performance:static_executor .
+```
+
+3. Run the compose file 
+```
+cd ../compose
+docker-compose up
+```
+4. Inspect the results in a new terminal (ctrl+alt+t)
+```
+docker stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.PIDs}}"
+```
 
 ## How to use
 Replace your rclcpp folder with this version (Make sure you rebuild!).
