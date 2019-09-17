@@ -1,5 +1,5 @@
 FROM ros:dashing_source
-RUN pwd
+
 RUN bash -c 'cd ~/ros2_ws/ && sudo rm -rf build/rclcpp install/rclcpp && cd src/ros2 && sudo rm -rf rclcpp'
 RUN bash -c 'cd ~/ros2_ws/src/ros2 && git clone https://github.com/nobleo/rclcpp-static-executor.git'
 
