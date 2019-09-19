@@ -48,7 +48,7 @@ docker build -t ros2_performance:static_executor .
 
 3. Run the compose file 
 ```
-cd ../compose
+cd ../compose/0
 docker-compose up
 ```
 4. Inspect the results in a new terminal (ctrl+alt+t)
