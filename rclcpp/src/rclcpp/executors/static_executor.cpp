@@ -74,8 +74,6 @@ StaticExecutor::get_subscription_list(ExecutableList & exec_list)
 {
    exec_list.subscription.clear();   //in case the function is called twice subscribers will not append themselves
    exec_list.number_of_subscription = 0;
-   exec_list.timer.clear();      //in case the function is called twice timers will not append themselves
-   exec_list.number_of_subscription = 0;
    for (auto & weak_node : weak_nodes_) {
      auto node = weak_node.lock();
      if (!node) {
@@ -157,11 +155,11 @@ StaticExecutor::get_client_list(ExecutableList & exec_list)
   }
 }
 
-//TODO: verify working of this function
+
 void
 StaticExecutor::get_waitable_list(ExecutableList & exec_list)
 {
-  exec_list.waitable.clear();      //in case the function is called twice client will not append themselves
+  exec_list.waitable.clear();
   exec_list.number_of_waitable = 0;
   for (auto & weak_node : weak_nodes_) {
     auto node = weak_node.lock();
@@ -214,7 +212,7 @@ StaticExecutor::execute_wait_set(
 {
     refresh_wait_set(timeout);  //need to change to refresh_wait_set
     for (size_t i = 0; i < wait_set_.size_of_subscriptions; ++i) {
-      if (wait_set_.size_of_subscriptions && exec_list.number_of_subscription) {
+      if (wait_set_.size_of_subscriptions && i < exec_list.number_of_subscription) {
         if (wait_set_.subscriptions[i]) {
           if (exec_list.subscription[i]->get_intra_process_subscription_handle()) {
             execute_intra_process_subscription(exec_list.subscription[i]);
@@ -227,38 +225,34 @@ StaticExecutor::execute_wait_set(
     }
 
     for (size_t i = 0; i < wait_set_.size_of_timers; ++i) {
-      if (wait_set_.size_of_timers && exec_list.number_of_timer) {
+      if (wait_set_.size_of_timers && i < exec_list.number_of_timer) {
         if (wait_set_.timers[i]) {
-          if(i < exec_list.number_of_timer && exec_list.timer[i]->is_ready()){
             execute_timer(exec_list.timer[i]);
-          }
         }
       }
     }
 
     for (size_t i = 0; i < wait_set_.size_of_services; ++i) {
-      if (wait_set_.size_of_services && exec_list.number_of_service) {
+     if (wait_set_.size_of_services && i < exec_list.number_of_service) {
         if (wait_set_.services[i]) {
             execute_service(exec_list.service[i]);
         }
       }
     }
-  //TODO: verify working of execute_client
+
    for (size_t i = 0; i < wait_set_.size_of_clients; ++i) {
-      if (wait_set_.size_of_clients && exec_list.number_of_client) {
+      if (wait_set_.size_of_clients && i < exec_list.number_of_client) {
         if (wait_set_.clients[i]) {
             execute_client(exec_list.client[i]);
         }
       }
     }
-/*
-  //TODO: Verify working of wait_set
+
     for (size_t i = 0; i < exec_list.number_of_waitable; ++i) {
-      if (exec_list.waitable[i]->is_ready(wait_set_)) {
+      if (exec_list.number_of_waitable && exec_list.waitable[i]->is_ready(&wait_set_)) {
         exec_list.waitable[i]->execute();
       }
     }
-*/
 }
 
 void
@@ -309,9 +303,7 @@ StaticExecutor::prepare_wait_set()
 void
 StaticExecutor::refresh_wait_set(std::chrono::nanoseconds timeout)
 {
-  // Collect the subscriptions and timers to be waited on
-
-   // clear wait set
+    // clear wait set
   if (rcl_wait_set_clear(&wait_set_) != RCL_RET_OK) {
     throw std::runtime_error("Couldn't clear wait set");
   }
