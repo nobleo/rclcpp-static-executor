@@ -44,6 +44,8 @@ cd ../ros2_performance_ste_executor
 docker build -t ros2_performance:ste_executor .
 cd ../ros2_performance_static_executor
 docker build -t ros2_performance:static_executor .
+cd ../ros2_performance_let_executor
+docker build -t ros2_performance:let_executor .
 ```
 
 3. Run the compose file 
