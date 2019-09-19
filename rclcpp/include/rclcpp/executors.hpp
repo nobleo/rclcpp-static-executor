@@ -77,7 +77,6 @@ spin_node_until_future_complete(
 {
   // TODO(wjwwood): does not work recursively; can't call spin_node_until_future_complete
   // inside a callback executed by an executor.
-  std::cout << "\033[0;36m [RCLCPP] [STE]: spin_node_until_future_complete 2 called, this one\033[0m " << std::endl;
   executor.add_node(node_ptr);
   auto retcode = executor.spin_until_future_complete(future, timeout);
   executor.remove_node(node_ptr);
@@ -93,7 +92,6 @@ spin_node_until_future_complete(
   std::shared_future<ResponseT> & future,
   std::chrono::duration<TimeRepT, TimeT> timeout = std::chrono::duration<TimeRepT, TimeT>(-1))
 {
-  std::cout << "\033[0;33m [RCLCPP] [STE]: spin_node_until_future_complete 1 called\033[0m " << std::endl;
   return rclcpp::executors::spin_node_until_future_complete(
     executor,
     node_ptr->get_node_base_interface(),
@@ -110,7 +108,6 @@ spin_until_future_complete(
   std::shared_future<FutureT> & future,
   std::chrono::duration<TimeRepT, TimeT> timeout = std::chrono::duration<TimeRepT, TimeT>(-1))
 {
-  std::cout << "\033[0;36m [RCLCPP] [STE]: spin_until_future_complete 2 called, this one \033[0m " << std::endl;
   rclcpp::executors::SingleThreadedExecutor executor;
   return executors::spin_node_until_future_complete<FutureT>(executor, node_ptr, future, timeout);
 }
@@ -123,7 +120,6 @@ spin_until_future_complete(
   std::shared_future<FutureT> & future,
   std::chrono::duration<TimeRepT, TimeT> timeout = std::chrono::duration<TimeRepT, TimeT>(-1))
 {
-  std::cout << "\033[0;33m [RCLCPP] : spin_until_future_complete 1 called\033[0m " << std::endl;
   return rclcpp::spin_until_future_complete(node_ptr->get_node_base_interface(), future, timeout);
 }
 

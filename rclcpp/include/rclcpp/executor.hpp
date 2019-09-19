@@ -228,7 +228,6 @@ public:
 
     // Check the future before entering the while loop.
     // If the future is already complete, don't try to spin.
-    std::cout << "\033[0;36m [RCLCPP] [STE]: spin_until_future_complete 3 called\033[0m " << std::endl;
     std::future_status status = future.wait_for(std::chrono::seconds(0));
     if (status == std::future_status::ready) {
       return FutureReturnCode::SUCCESS;
