@@ -5,7 +5,7 @@ RUN bash -c 'cd ~/ros2_ws/src/ros2 && git clone https://github.com/nobleo/rclcpp
 
 RUN bash -c 'cd ~/ros2_ws/src/ros2 && git clone https://github.com/nobleo/ros2_performance.git'
 
-RUN bash -c 'cd ~/ros2_ws && colcon build --symlink-install --packages-select rclcpp ros2_performance'
+RUN bash -c 'cd ~/ros2_ws && colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo --symlink-install --packages-select rclcpp ros2_performance'
 
 # Entrypoint setup
 COPY ./ros_entrypoint.sh /
