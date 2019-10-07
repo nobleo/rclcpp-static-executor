@@ -1,4 +1,4 @@
-// Copyright 2015 Open Source Robotics Foundation, Inc.
+// Copyright 2019 Nobleo Technology.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,17 +42,15 @@ struct ExecutableList
 
   // More than one of the following pointers can be set.
   std::vector<rclcpp::SubscriptionBase::SharedPtr> subscription;
-  int number_of_subscription;
-  std::vector<rclcpp::SubscriptionBase::SharedPtr> subscription_intra_process;
-  int number_of_subscription_intra_process;
+  size_t number_of_subscription;
   std::vector<rclcpp::TimerBase::SharedPtr> timer;
-  int number_of_timer;
+  size_t number_of_timer;
   std::vector<rclcpp::ServiceBase::SharedPtr> service;
-  int number_of_service;
+  size_t number_of_service;
   std::vector<rclcpp::ClientBase::SharedPtr> client;
-  int number_of_client;
+  size_t number_of_client;
   std::vector<rclcpp::Waitable::SharedPtr> waitable;
-  int number_of_waitable;
+  size_t number_of_waitable;
   // These are used to keep the scope on the containing items
   rclcpp::callback_group::CallbackGroup::SharedPtr callback_group;
   rclcpp::node_interfaces::NodeBaseInterface::SharedPtr node_base;

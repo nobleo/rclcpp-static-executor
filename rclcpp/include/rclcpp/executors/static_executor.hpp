@@ -21,6 +21,7 @@
 #include <cstdlib>
 #include <memory>
 #include <vector>
+#include <future>
 
 #include "rclcpp/executor.hpp"
 #include "rclcpp/macros.hpp"
@@ -99,6 +100,62 @@ protected:
 
   RCLCPP_PUBLIC
   void prepare_wait_set();
+
+public:
+
+  /*
+    For running client:
+    auto result = client->async_send_request(request);
+    rclcpp::executors::StaticExecutor static_exec;
+    static_exec.add_node(node);
+    if (static_exec.spin_until_future_complete(result) ==
+    rclcpp::executor::FutureReturnCode::SUCCESS)
+  */
+  template<typename ResponseT, typename TimeRepT = int64_t, typename TimeT = std::milli>
+  rclcpp::executor::FutureReturnCode
+  spin_until_future_complete(
+    std::shared_future<ResponseT> & future,
+    std::chrono::duration<TimeRepT, TimeT> timeout = std::chrono::duration<TimeRepT, TimeT>(-1))
+  {
+    std::future_status status = future.wait_for(std::chrono::seconds(0));
+    if (status == std::future_status::ready) {
+      return rclcpp::executor::FutureReturnCode::SUCCESS;
+    }
+
+    auto end_time = std::chrono::steady_clock::now();
+    std::chrono::nanoseconds timeout_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+      timeout);
+    if (timeout_ns > std::chrono::nanoseconds::zero()) {
+      end_time += timeout_ns;
+    }
+    std::chrono::nanoseconds timeout_left = timeout_ns;
+
+    rclcpp::executor::ExecutableList executable_list;
+    run_collect_entities();
+    get_executable_list(executable_list);
+    while (rclcpp::ok(this->context_)) {
+      execute_wait_set(executable_list, timeout_left);
+      // Check if the future is set, return SUCCESS if it is.
+      status = future.wait_for(std::chrono::seconds(0));
+      if (status == std::future_status::ready) {
+        return rclcpp::executor::FutureReturnCode::SUCCESS;
+      }
+      // If the original timeout is < 0, then this is blocking, never TIMEOUT.
+      if (timeout_ns < std::chrono::nanoseconds::zero()) {
+        continue;
+      }
+      // Otherwise check if we still have time to wait, return TIMEOUT if not.
+      auto now = std::chrono::steady_clock::now();
+      if (now >= end_time) {
+        return rclcpp::executor::FutureReturnCode::TIMEOUT;
+      }
+      // Subtract the elapsed time from the original timeout.
+      timeout_left = std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - now);
+    }
+
+    // The future did not complete before ok() returned false, return INTERRUPTED.
+    return rclcpp::executor::FutureReturnCode::INTERRUPTED;
+  }
 
 
 private:
