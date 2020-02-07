@@ -1,3 +1,8 @@
+# This version of the static executor is deprecated: 
+Static executor has been implemented as a separate library here https://github.com/nobleo/static_executor with the following added features:
+* Semi-dynamic (changes at runtime are allowed)
+* Subscribers, Timers, Clients, Services and Waitables are supported
+* Eloquent version is also available
 # rclcpp
 ROS2 dashing diademata rclcpp extended with a static executor POC
 
