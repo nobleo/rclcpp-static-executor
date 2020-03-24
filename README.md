@@ -3,6 +3,8 @@ Static executor has been implemented as a separate library here https://github.c
 * Semi-dynamic (changes at runtime are allowed)
 * Subscribers, Timers, Clients, Services and Waitables are supported
 * Eloquent version is also available
+
+Effort is currently focused on getting the static executor into the Foxy release with this PR: https://github.com/ros2/rclcpp/pull/873. This version of the static executor would be integrated into rclcpp and would come default with a ROS2 install (if approved). If you want to use this version right now, you will have to replace your entire rclcpp with the version here: https://github.com/nobleo/rclcpp/tree/nobleo/feature/static_executor. This version will have the latest changes and bug fixes, but requires more effort to use/install. Depending on future developments changes and bug fixes may or may not be applied to https://github.com/nobleo/static_executor as well.
 # rclcpp
 ROS2 dashing diademata rclcpp extended with a static executor POC
 
